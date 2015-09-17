@@ -1,0 +1,128 @@
+---
+title: 'Reproducible Research: Peer Assessment 1'
+author: "Nazri Othman"
+date: "September 14, 2015"
+output: html_document
+---
+ 
+ 
+ 
+# **Loading and Preprocessing the Data**
+
+```{r}
+
+# Clear the workspace
+rm(list=ls())
+
+# Load all the necessary libraries
+library(ggplot2)
+##library(scales)
+##library(Hmisc)
+
+# Unzip the activity dataset
+if(!file.exists('activity.csv')){
+    unzip('activity.zip')
+}
+
+# Load the activity dataset
+activityData <- read.csv('activity.csv', stringsAsFactors=FALSE)
+##head(activityData)
+##str(activityData)
+
+# Transform the date attribute to an actual date format
+##activityData$date <- as.POSIXct(activityData$date, format="%Y-%m-%d")
+activityData$date <- as.Date(activityData$date, format="%Y-%m-%d")
+head(activityData)
+str(activityData)
+
+# Compute the weekdays from the date attribute
+activityData$weekday <- weekdays(activityData$date)
+head(activityData)
+str(activityData)
+
+# Compute the day type (weekend or weekday)
+activityData$daytype <- ifelse(activityData$weekday == "Saturday" | activityData$weekday == "Sunday", "weekend", "weekday")
+head(activityData)
+str(activityData)
+
+```
+ 
+ 
+ 
+## **What is mean total number of steps taken per day?**
+ 
+### *1. Compute the total number of steps taken per day (NA values removed)*
+```{r}
+
+##stepsPerDay <- tapply(activityData$steps, activityData$date, sum, na.rm=TRUE)
+stepsPerDay <- aggregate(activityData$steps, list(date=activityData$date), sum, na.rm=TRUE)
+head(stepsPerDay)
+str(stepsPerDay)
+
+```
+ 
+### *2. Plot a histogram of the total number of steps taken per day*
+```{r}
+
+##qplot(stepsPerDay, xlab='Total steps per day', ylab='Frequency')
+
+##hist(stepsPerDay, breaks=seq(from=0, to=25000, by=2500),col="blue", xlab="Total number of steps", ylim=c(0, 20), main="Histogram of the total number of steps taken each day\n(NA removed)")
+
+ggplot(data=stepsPerDay, aes(stepsPerDay$x)) + geom_histogram(col="red", binwidth = 1000, aes(fill=..count..)) + labs(title = "Histogram of Steps Taken per Day", x = "Number of Steps per Day", y = "Count") + theme_bw() 
+
+```
+ 
+### *3. Calculate and report the mean and median for total number of steps taken per day*
+```{r}
+
+stepsPerDayMean <- mean(stepsPerDay$x)
+stepsPerDayMedian <- median(stepsPerDay$x)
+
+```
+ 
+- The **Mean** = `r stepsPerDayMean` 
+- The **Median** = `r stepsPerDayMedian`
+  
+  
+  
+# **What is the average daily activity pattern?**
+
+### *1. Compute number of steps by intervals of 5-minutes*
+```{r}
+
+stepsMeanPerInterval <- aggregate(activityData$steps, list(interval=activityData$interval), mean, na.rm=TRUE)
+head(stepsMeanPerInterval)
+str(stepsMeanPerInterval)
+
+```
+
+### *2. Plot the time series of the average number of steps taken (averaged across all days) versus the 5-minute intervals*
+```{r}
+
+ggplot(stepsMeanPerInterval, aes(x=interval, y=x)) + geom_line(color="blue", size=1) + labs(title="Average Daily Activity Pattern", x="5-Minute Intervals", y="Mean Number of Steps") +  theme_bw()
+
+```
+
+### *3. Calculate the 5-minute interval with the containing the maximum number of steps*
+```{r}
+
+maxStepsInterval <- stepsMeanPerInterval[which.max(stepsMeanPerInterval$x),]
+
+```
+
+The max steps is **`r maxStepsInterval$x`** at the interval **`r maxStepsInterval$interval`**.
+
+## **Imputing missing values**
+
+```{r}
+
+```
+
+
+
+## **Are there differences in activity patterns between weekdays and weekends?**
+
+```{r}
+
+```
+
