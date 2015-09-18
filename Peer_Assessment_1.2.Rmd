@@ -2,7 +2,7 @@
 title: 'Reproducible Research: Peer Assessment 1'
 author: "Nazri Othman"
 date: "September 14, 2015"
-output: word_document
+output: html_document
 ---
 
 
@@ -16,7 +16,7 @@ Set the working directory accordingly then set echo equal to TRUE and results eq
 setwd("~/")
 setwd("../RepData_PeerAssessment1")
 library(knitr)
-opts_chunk$set(echo = TRUE, results = 'hide', warning = FALSE)
+opts_chunk$set(echo = TRUE, warning = FALSE)
 
 ```
 
@@ -42,6 +42,9 @@ activityData <- read.csv('activity.csv', stringsAsFactors=FALSE)
 # Transform the date attribute to an actual date format
 activityData$date <- as.Date(activityData$date, format="%Y-%m-%d")
 
+# Check the data structure
+str(activityData)
+
 ```
 
   
@@ -54,6 +57,9 @@ activityData$date <- as.Date(activityData$date, format="%Y-%m-%d")
 
 stepsPerDay <- aggregate(activityData$steps, list(date=activityData$date), sum, na.rm=TRUE)
 names(stepsPerDay)[2] <- "steps"
+
+# Check the dataset
+head(stepsPerDay)
 
 ```
  
@@ -85,6 +91,8 @@ stepsPerDayMedian <- median(stepsPerDay$steps)
 stepsMeanPerInterval <- aggregate(activityData$steps, list(interval=activityData$interval), mean, na.rm=TRUE)
 names(stepsMeanPerInterval)[2] <- "stepsmean"
 
+# Check the dataset
+head(stepsMeanPerInterval)
 ```
 
 ### *2. Plot the time series of the average number of steps taken (averaged across all days) versus the 5-minute intervals*
@@ -132,6 +140,8 @@ for (i in 1:17568) {
     
   }
 
+# Check whether there are still NA 
+summary(activityData)
 
 ```
 
@@ -140,6 +150,9 @@ for (i in 1:17568) {
 
 stepsPerDay <- aggregate(activityData$steps, list(date=activityData$date), sum)
 names(stepsPerDay)[2] <- "steps"
+
+# Check the dataset
+head(stepsPerDay)
 
 ```
  
@@ -177,6 +190,9 @@ activityData$weekday <- weekdays(activityData$date)
 # Compute the day type (weekend or weekday)
 activityData$daytype <- ifelse(activityData$weekday == "Saturday" | activityData$weekday == "Sunday", "weekend", "weekday")
 
+# Check the dataset
+head(activityData)
+
 ```
 
 ### *2. Compute number of steps by intervals of 5-minutes*
@@ -184,6 +200,9 @@ activityData$daytype <- ifelse(activityData$weekday == "Saturday" | activityData
 
 stepsMeanPerInterval <- aggregate(activityData$steps, list(interval=activityData$interval, daytype=activityData$daytype), mean)
 names(stepsMeanPerInterval)[3] <- "stepsmean"
+
+# Check the dataset
+head(stepsMeanPerInterval)
 
 ```
 
