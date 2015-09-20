@@ -5,10 +5,17 @@
 
 Throughout this report when writing code chunks in the R markdown document, always use echo = TRUE so that someone else will be able to read the code.
 
-Set the working directory accordingly then set echo equal to TRUE as global options for this document. 
+Set the echo equal to TRUE as global options for this document. 
 
 ```r
 library(knitr)
+```
+
+```
+## Warning: package 'knitr' was built under R version 3.2.2
+```
+
+```r
 opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
@@ -73,7 +80,7 @@ head(stepsPerDay)
 ### *2. Plot a histogram of total number of steps taken per day*
 
 ```r
-ggplot(data=stepsPerDay, aes(stepsPerDay$steps)) + geom_histogram(aes(fill=..count..), binwidth = 1000) + labs(title = "Histogram of Steps Taken per Day", x = "Number of Steps Taken per Day", y = "Frequency") + theme_bw() 
+ggplot(data=stepsPerDay, aes(stepsPerDay$steps)) + geom_histogram(aes(fill=..count..), binwidth = 1000) + labs(title = "Histogram of Steps Taken per Day", x = "Number of Steps Taken per Day", y = "Count") + theme_bw() 
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
@@ -115,7 +122,7 @@ head(stepsMeanPerInterval)
 ### *2. Plot the time series of the average number of steps taken (averaged across all days) versus the 5-minute intervals*
 
 ```r
-ggplot(stepsMeanPerInterval, aes(x=interval, y=stepsmean)) + geom_line(color="blue") + labs(title="Average Daily Activity Pattern", x="5-Minute Intervals", y="Mean Number of Steps") +  theme_bw()
+ggplot(stepsMeanPerInterval, aes(x=interval, y=stepsmean)) + geom_line(color="blue") + labs(title="Average Daily Activity Pattern", x="5-Minute Intervals", y=" Steps Mean") +  theme_bw()
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
@@ -135,7 +142,7 @@ The max steps is **206** at the **835**th interval.
 ### *1. Total number of missing values*
 
 ```r
-missingValue <- as.numeric(sum(is.na(activityData$steps)))
+missingValue <- sum(is.na(activityData$steps))
 ```
 
 The total number of missing values are **2304**.
@@ -144,11 +151,11 @@ The total number of missing values are **2304**.
 ### *2. Strategy for filling in all of the missing values in the dataset*
 
 ```r
-# merge activity dataset with steps mean dataset by interval
+# merge activity dataset with steps mean by interval dataset 
 activityData <- merge(activityData, stepsMeanPerInterval, by="interval")
 
 # fill in missing value (NA) with a value of steps mean per interval 
-for (i in 1:17568) {
+for (i in 1:nrow(activityData)) {
   
   if(is.na(activityData$steps[i])){
      
@@ -170,7 +177,21 @@ summary(activityData)
 ##  Max.   :2355.0   Max.   :806.00   Max.   :2012-11-30   Max.   :206.170
 ```
 
-### *3. Compute total number of steps taken per day (NA values replaced with Steps Mean per interval)*
+```r
+head(activityData)
+```
+
+```
+##   interval    steps       date stepsmean
+## 1        0 1.716981 2012-10-01  1.716981
+## 2        0 0.000000 2012-11-23  1.716981
+## 3        0 0.000000 2012-10-28  1.716981
+## 4        0 0.000000 2012-11-06  1.716981
+## 5        0 0.000000 2012-11-24  1.716981
+## 6        0 0.000000 2012-11-15  1.716981
+```
+
+### *3. Compute total number of steps taken per day (NA value were replaced with the value of Steps Mean per interval)*
 
 ```r
 stepsPerDay <- aggregate(activityData$steps, list(date=activityData$date), sum)
@@ -193,7 +214,7 @@ head(stepsPerDay)
 ### *4. Plot a histogram of total number of steps taken per day*
 
 ```r
-ggplot(data=stepsPerDay, aes(stepsPerDay$steps)) + geom_histogram(aes(fill=..count..), binwidth = 1000) + labs(title = "Histogram of Steps Taken per Day\n (with replaced NA value)", x = "Number of Steps Taken per Day", y = "Frequency") + theme_bw() 
+ggplot(data=stepsPerDay, aes(stepsPerDay$steps)) + geom_histogram(aes(fill=..count..), binwidth = 1000) + labs(title = "Histogram of Steps Taken per Day\n (with replaced NA value)", x = "Number of Steps Taken per Day", y = "Count") + theme_bw() 
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
@@ -262,7 +283,7 @@ head(stepsMeanPerInterval)
 ### *3. Plot the time series of the average number of steps taken (averaged across all days) versus the 5-minute intervals*
 
 ```r
-ggplot(stepsMeanPerInterval, aes(x=interval, y=stepsmean)) + geom_line(color="blue") + labs(title="Average Daily Activity Pattern\n (with replaced NA value)", x="5-Minute Intervals", y="Mean Number of Steps") + facet_wrap(~daytype, ncol=1) + theme_bw()
+ggplot(stepsMeanPerInterval, aes(x=interval, y=stepsmean)) + geom_line(color="blue") + labs(title="Average Daily Activity Pattern\n (with replaced NA value)", x="5-Minute Intervals", y="Steps Mean") + facet_wrap(~daytype, ncol=1) + theme_bw()
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-16-1.png) 
